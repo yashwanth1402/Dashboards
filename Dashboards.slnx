@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="dashboards.client/dashboards.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="Dashboards.Server/Dashboards.Server.csproj" />
+</Solution>
