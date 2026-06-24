@@ -4,3 +4,8 @@ GET {{Dashboards.Server_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+GET {{Dashboards.Server_HostAddress}}/api/employees
+Accept: application/json
+
+###

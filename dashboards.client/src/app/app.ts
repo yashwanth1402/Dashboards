@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
-import { EmployeeComponent } from './employee/employee';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [EmployeeComponent],
-  template: `<app-employee></app-employee>`
+  imports: [RouterOutlet],
+  templateUrl: './app.html',
+  styleUrl: './app.css'
 })
 export class AppComponent {
 }

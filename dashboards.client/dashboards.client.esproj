@@ -7,4 +7,13 @@
     <!-- Folder where production build objects will be placed -->
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\dashboards.client\browser\</BuildOutputFolder>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="src\app\employee\**" />
+    <TypeScriptConfiguration Remove="src\app\employee\**" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties angular_1json__JsonSchema="" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

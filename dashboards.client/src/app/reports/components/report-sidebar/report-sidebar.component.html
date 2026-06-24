@@ -1,0 +1,15 @@
+<aside class="report-sidebar">
+  <h2>Report Categories</h2>
+  <nav aria-label="Report categories">
+    <button
+      type="button"
+      *ngFor="let category of categories"
+      class="report-nav-item"
+      [class.active]="category.key === activeReport"
+      (click)="reportChange.emit(category.key)"
+    >
+      <span class="report-nav-icon">{{ category.title.charAt(0) }}</span>
+      <span>{{ category.title }}</span>
+    </button>
+  </nav>
+</aside>

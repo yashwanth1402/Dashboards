@@ -1,0 +1,86 @@
+.dashboard-page {
+  min-height: 100vh;
+  padding: 2rem;
+  background: #f7f9fc;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-card,
+.chart-card {
+  border: 1px solid #dde3ea;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.5rem 1.25rem rgba(15, 23, 42, 0.06);
+}
+
+.metric-value {
+  color: #172033;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.75rem;
+}
+
+.joining-chart {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(2.25rem, 1fr));
+  align-items: end;
+  gap: 0.75rem;
+  min-height: 18rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.joining-chart__item {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 0.75rem;
+  min-width: 2.25rem;
+  height: 18rem;
+}
+
+.joining-chart__bar-wrap {
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  min-height: 14rem;
+  border-bottom: 1px solid #d7dee8;
+}
+
+.joining-chart__bar {
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  width: 100%;
+  max-width: 3.5rem;
+  min-height: 0.4rem;
+  padding-top: 0.35rem;
+  border-radius: 0.4rem 0.4rem 0 0;
+  background: linear-gradient(180deg, #0d6efd 0%, #20c997 100%);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.joining-chart__label {
+  color: #5c6778;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+@media (max-width: 767.98px) {
+  .dashboard-page {
+    padding: 1rem;
+  }
+
+  .joining-chart {
+    grid-template-columns: repeat(12, 3rem);
+  }
+}

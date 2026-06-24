@@ -1,0 +1,246 @@
+<main class="reports-page">
+  <header class="app-header">
+    <div class="brand">Sailfish</div>
+    <div class="header-meta">
+      <span>Current Port</span>
+      <strong>Port of Long Beach</strong>
+    </div>
+    <div class="user-avatar" aria-label="Alex Morgan">AM</div>
+  </header>
+
+  <section class="reports-layout">
+    <app-report-sidebar
+      [categories]="data.categories"
+      [activeReport]="activeReport"
+      (reportChange)="setActiveReport($event)"
+    />
+
+    <section class="reports-content">
+      <div class="reports-toolbar">
+        <h1>{{ reportTitle }}</h1>
+        <div class="toolbar-actions">
+          <button type="button" title="Export setup requires a PDF/Excel package later">Export</button>
+          <button type="button" title="Email export requires backend support later">Email</button>
+          <button type="button" (click)="clearReportSelections()">Reset View</button>
+          <button type="button" (click)="print()">Print</button>
+        </div>
+      </div>
+
+      <app-report-filter-panel
+        [vessels]="data.filters.vessels"
+        [customers]="data.filters.customers"
+        (filtersApplied)="applyFilters($event)"
+      />
+
+      <section *ngIf="activeReport === 'vessel-activity'" class="report-stack">
+        <article class="report-card chart-card">
+          <div class="card-heading">
+            <h2>Vessel Activity Overview (MT per Day)</h2>
+            <span *ngIf="selectedVesselDate" class="active-chip">Date filter active</span>
+          </div>
+          <div *ngIf="chartTooltip" class="chart-tooltip" [ngClass]="chartTooltip.tone">
+            <strong>{{ chartTooltip.title }}</strong>
+            <span>{{ chartTooltip.value }}</span>
+          </div>
+          <div class="vertical-chart" aria-label="Vessel activity bar chart">
+            <div
+              *ngFor="let point of filteredVesselChart; trackBy: trackByLabel"
+              class="vertical-chart-item"
+              [class.selected]="selectedVesselDate === point.dateValue"
+            >
+              <div class="bar-track">
+                <button
+                  type="button"
+                  class="bar-fill"
+                  [style.height.%]="tonnageHeight(point)"
+                  (mouseenter)="showVesselTooltip(point)"
+                  (focus)="showVesselTooltip(point)"
+                  (mouseleave)="hideTooltip()"
+                  (blur)="hideTooltip()"
+                  (click)="selectVesselDate(point)"
+                >
+                  <span>{{ point.tonnage | number }}</span>
+                </button>
+              </div>
+              <strong>{{ point.date }}</strong>
+            </div>
+            <p *ngIf="filteredVesselChart.length === 0" class="empty-chart">
+              No chart data matches the selected date range.
+            </p>
+          </div>
+        </article>
+
+        <article class="report-card">
+          <h2>Activity Downtime Table</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Vessel Name</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Total Tonnage</th>
+                  <th>Active Hrs</th>
+                  <th>Efficiency</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of downtimeRows">
+                  <td><strong>{{ row.vesselName }}</strong></td>
+                  <td>{{ row.startDate }}</td>
+                  <td>{{ row.endDate }}</td>
+                  <td>{{ row.totalTonnage | number }} MT</td>
+                  <td>{{ row.activeHours }}</td>
+                  <td>
+                    <span class="efficiency" [class.warning]="row.efficiency < 90">
+                      {{ row.efficiency }}%
+                    </span>
+                  </td>
+                </tr>
+                <tr *ngIf="downtimeRows.length === 0">
+                  <td colspan="6" class="empty-row">No rows match the selected filters.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section *ngIf="activeReport === 'activity-summary'" class="report-stack">
+        <div class="split-grid">
+          <article class="report-card chart-card">
+            <div class="card-heading">
+              <h2>Activity Category Distribution</h2>
+              <span *ngIf="selectedActivityCategory" class="active-chip">{{ selectedActivityCategory }}</span>
+            </div>
+            <div *ngIf="chartTooltip" class="chart-tooltip" [ngClass]="chartTooltip.tone">
+              <strong>{{ chartTooltip.title }}</strong>
+              <span>{{ chartTooltip.value }}</span>
+            </div>
+            <div class="donut-wrap">
+              <div class="donut" [style.background]="donutBackground">
+                <span>100%</span>
+              </div>
+              <ul class="legend">
+                <li *ngFor="let item of data.activitySummary.categories">
+                  <button
+                    type="button"
+                    [class.selected]="selectedActivityCategory === item.category"
+                    (mouseenter)="showActivityTooltip(item)"
+                    (focus)="showActivityTooltip(item)"
+                    (mouseleave)="hideTooltip()"
+                    (blur)="hideTooltip()"
+                    (click)="selectActivityCategory(item)"
+                  >
+                    <span [style.background]="item.color"></span>
+                    {{ item.category }} - {{ item.percentage }}%
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="report-card chart-card">
+            <div class="card-heading">
+              <h2>Downtime Analysis</h2>
+              <span *ngIf="selectedDowntimeMetric" class="active-chip">{{ selectedDowntimeMetric }}</span>
+            </div>
+            <div class="horizontal-chart">
+              <div *ngFor="let item of filteredDowntimeMetrics; trackBy: trackByLabel" class="hbar-row">
+                <span>{{ item.label }}</span>
+                <div class="hbar-track">
+                  <button
+                    type="button"
+                    class="hbar-fill"
+                    [class.selected]="selectedDowntimeMetric === item.label"
+                    [style.width.%]="downtimeWidth(item)"
+                    (mouseenter)="showDowntimeTooltip(item)"
+                    (focus)="showDowntimeTooltip(item)"
+                    (mouseleave)="hideTooltip()"
+                    (blur)="hideTooltip()"
+                    (click)="selectDowntimeMetric(item)"
+                  >
+                    {{ item.hours }}h
+                  </button>
+                </div>
+              </div>
+              <p *ngIf="filteredDowntimeMetrics.length === 0" class="empty-chart">
+                No downtime data matches your search.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <article class="report-card">
+          <h2>Detailed Summary Metrics</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Hours</th>
+                  <th>% of Total</th>
+                  <th>Trend</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of filteredActivityCategories">
+                  <td><strong>{{ item.category }}</strong></td>
+                  <td>{{ item.hours }}</td>
+                  <td>{{ item.percentage }}%</td>
+                  <td>{{ trendLabel(item) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section *ngIf="activeReport === 'monthly-rate'" class="report-stack">
+        <article class="report-card chart-card">
+          <div class="card-heading">
+            <h2>Monthly Loading Rate Trend (MT/Hr)</h2>
+            <span *ngIf="selectedMonth" class="active-chip">{{ selectedMonth }}</span>
+          </div>
+          <div *ngIf="chartTooltip" class="chart-tooltip" [ngClass]="chartTooltip.tone">
+            <strong>{{ chartTooltip.title }}</strong>
+            <span>{{ chartTooltip.value }}</span>
+          </div>
+          <svg class="line-chart" viewBox="0 0 500 190" role="img" aria-label="Monthly loading rate line chart">
+            <polyline [attr.points]="monthlyLinePoints" />
+            <g *ngFor="let point of data.monthlyRate.trend; let i = index">
+              <text [attr.x]="16 + (i / 5) * 468" y="184">{{ point.month }}</text>
+              <circle
+                class="line-point"
+                [class.selected]="selectedMonth === point.month"
+                [attr.cx]="16 + (i / 5) * 468"
+                [attr.cy]="monthlyPointY(point)"
+                r="7"
+                tabindex="0"
+                (mouseenter)="showMonthlyTooltip(point)"
+                (focus)="showMonthlyTooltip(point)"
+                (mouseleave)="hideTooltip()"
+                (blur)="hideTooltip()"
+                (click)="selectMonth(point)"
+              />
+            </g>
+          </svg>
+        </article>
+
+        <div class="metric-grid">
+          <article
+            *ngFor="let metric of data.monthlyRate.metrics"
+            class="metric-card"
+            [class.primary]="metric.tone === 'primary'"
+            [class.success]="metric.tone === 'success'"
+            [class.info]="metric.tone === 'info'"
+          >
+            <span>{{ metric.label }}</span>
+            <strong>{{ metric.value }}</strong>
+            <small>{{ metric.caption }}</small>
+          </article>
+        </div>
+      </section>
+    </section>
+  </section>
+</main>

@@ -1,0 +1,31 @@
+<form class="filter-panel" [formGroup]="form" (ngSubmit)="applyFilters()">
+  <div class="filter-field date-range">
+    <label>Date Range</label>
+    <div class="date-inputs">
+      <input type="date" formControlName="startDate" />
+      <span>to</span>
+      <input type="date" formControlName="endDate" />
+    </div>
+  </div>
+
+  <div class="filter-field">
+    <label>Vessel</label>
+    <select formControlName="vessel">
+      <option *ngFor="let vessel of vessels" [value]="vessel">{{ vessel }}</option>
+    </select>
+  </div>
+
+  <div class="filter-field">
+    <label>Customer</label>
+    <select formControlName="customer">
+      <option *ngFor="let customer of customers" [value]="customer">{{ customer }}</option>
+    </select>
+  </div>
+
+  <div class="filter-field">
+    <label>Search</label>
+    <input type="search" formControlName="search" placeholder="Vessel or customer" />
+  </div>
+
+  <button type="submit">Apply</button>
+</form>

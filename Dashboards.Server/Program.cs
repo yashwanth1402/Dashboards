@@ -15,7 +15,10 @@ builder.Services.AddCors(options =>
                   .AllowAnyMethod();
         });
 });
-builder.Services.AddHttpClient();
+builder.Services.AddHttpClient("EmployeesApi", client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(10);
+});
 var app = builder.Build();
 app.UseCors("AllowAngular");
 

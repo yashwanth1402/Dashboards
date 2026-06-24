@@ -1,0 +1,93 @@
+{
+  "categories": [
+    {
+      "key": "vessel-activity",
+      "title": "Vessel Activity",
+      "subtitle": "Vessel Activity Report"
+    },
+    {
+      "key": "activity-summary",
+      "title": "Activity Summary",
+      "subtitle": "Activity Summary Report"
+    },
+    {
+      "key": "monthly-rate",
+      "title": "Monthly Activity Rate",
+      "subtitle": "Monthly Activity Rate Report"
+    }
+  ],
+  "filters": {
+    "vessels": ["All Vessels", "Caribbean Princess", "Albion Bay"],
+    "customers": [
+      "All Customers",
+      "Oxbow",
+      "Mitsui",
+      "Marathon",
+      "HJ Baker",
+      "Cal Sulphur",
+      "SVM",
+      "US Borax",
+      "Cemex",
+      "Eagle Rock Aggregates"
+    ]
+  },
+  "vesselActivity": {
+    "chart": [
+      { "date": "Mar 10", "dateValue": "2026-03-10", "tonnage": 12000 },
+      { "date": "Mar 11", "dateValue": "2026-03-11", "tonnage": 15400 },
+      { "date": "Mar 12", "dateValue": "2026-03-12", "tonnage": 12994 },
+      { "date": "Mar 13", "dateValue": "2026-03-13", "tonnage": 10866 },
+      { "date": "Mar 14", "dateValue": "2026-03-14", "tonnage": 11427 },
+      { "date": "Mar 15", "dateValue": "2026-03-15", "tonnage": 9856 }
+    ],
+    "downtimeRows": [
+      {
+        "vesselName": "Caribbean Princess",
+        "customer": "Oxbow",
+        "startDate": "03/12/2026",
+        "endDate": "03/15/2026",
+        "totalTonnage": 77055,
+        "activeHours": 57,
+        "efficiency": 92
+      },
+      {
+        "vesselName": "Albion Bay",
+        "customer": "Mitsui",
+        "startDate": "03/10/2026",
+        "endDate": "03/14/2026",
+        "totalTonnage": 45200,
+        "activeHours": 42.5,
+        "efficiency": 85
+      }
+    ]
+  },
+  "activitySummary": {
+    "categories": [
+      { "category": "Loading Operations", "hours": 245.5, "percentage": 78.2, "trend": "up", "color": "#2e8b6f" },
+      { "category": "Equipment Delay", "hours": 24, "percentage": 7.6, "trend": "down", "color": "#dc3545" },
+      { "category": "Weather Standby", "hours": 12.5, "percentage": 4, "trend": "flat", "color": "#ffc107" },
+      { "category": "Maintenance", "hours": 6.5, "percentage": 2.2, "trend": "flat", "color": "#0dcaf0" }
+    ],
+    "downtime": [
+      { "label": "Downtime", "hours": 12 },
+      { "label": "Weather", "hours": 5 },
+      { "label": "Cargo Wait", "hours": 8 },
+      { "label": "Labour", "hours": 3 }
+    ]
+  },
+  "monthlyRate": {
+    "trend": [
+      { "month": "Oct 25", "rate": 1100 },
+      { "month": "Nov 25", "rate": 1150 },
+      { "month": "Dec 25", "rate": 1250 },
+      { "month": "Jan 26", "rate": 1200 },
+      { "month": "Feb 26", "rate": 1540 },
+      { "month": "Mar 26", "rate": 1420 }
+    ],
+    "metrics": [
+      { "label": "Peak Rate", "value": "1,540", "caption": "MT/Hr in Feb", "tone": "primary" },
+      { "label": "Avg Rate", "value": "1,204", "caption": "MT/Hr YTD", "tone": "success" },
+      { "label": "Total Tonnage", "value": "850K", "caption": "MT Handled", "tone": "info" }
+    ]
+  }
+}

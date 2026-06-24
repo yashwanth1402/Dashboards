@@ -1,0 +1,77 @@
+<main class="dashboard-page">
+<section class="dashboard-header">
+    <div>
+      <p class="text-uppercase text-primary fw-semibold small mb-2">Employee Dashboard</p>
+      <h1 class="h3 fw-bold mb-1">Workforce overview</h1>
+      <p class="text-secondary mb-0">Live employee totals and monthly joining trends.</p>
+    </div>
+  </section>
+
+  <div *ngIf="isLoading" class="alert alert-info mb-0" role="status">
+    Loading dashboard data...
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger mb-0" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <ng-container *ngIf="dashboardData as data">
+    <section class="row g-3 mb-4">
+      <div class="col-12 col-md-6 col-xl-4">
+        <article class="card dashboard-card h-100">
+          <div class="card-body">
+            <p class="text-secondary small mb-2">Total Employees</p>
+            <div class="metric-value">{{ data.totalEmployees }}</div>
+            <p class="text-secondary mb-0">Employees returned by the API</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="col-12 col-md-6 col-xl-4">
+        <article class="card dashboard-card h-100">
+          <div class="card-body">
+            <p class="text-secondary small mb-2">Active Employees</p>
+            <div class="metric-value text-success">{{ data.activeEmployees }}</div>
+            <p class="text-secondary mb-0">Currently marked active</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="col-12 col-xl-4">
+        <article class="card dashboard-card h-100">
+          <div class="card-body">
+            <p class="text-secondary small mb-2">Inactive Employees</p>
+            <div class="metric-value text-warning">{{ inactiveEmployees }}</div>
+            <p class="text-secondary mb-0">Total minus active employees</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="card chart-card">
+      <div class="card-body">
+        <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mb-4">
+          <div>
+            <h2 class="h5 fw-bold mb-1">Monthly Joining Chart</h2>
+            <p class="text-secondary mb-0">Employee joining distribution by month.</p>
+          </div>
+        </div>
+
+        <div class="joining-chart" aria-label="Monthly joining chart">
+          <div
+            *ngFor="let month of monthlyJoiningChart"
+            class="joining-chart__item"
+            [attr.aria-label]="month.label + ': ' + month.count + ' employees'"
+          >
+            <div class="joining-chart__bar-wrap">
+              <div class="joining-chart__bar" [style.height.%]="month.height">
+                <span>{{ month.count }}</span>
+              </div>
+            </div>
+            <span class="joining-chart__label">{{ month.label }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </ng-container>
+</main>
