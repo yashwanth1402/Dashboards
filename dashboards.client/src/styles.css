@@ -1,1 +1,26 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Global modal styles - ensures modals always show on top */
+.um-modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  z-index: 9998 !important;
+}
+
+.um-modal {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  background: #fff !important;
+  border-radius: 12px !important;
+  width: 540px !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+  z-index: 9999 !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+}

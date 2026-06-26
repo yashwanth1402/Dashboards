@@ -1,0 +1,232 @@
+<!-- Page Header -->
+<div class="page-header">
+  <h1 class="page-title">ROLES & ACCESS</h1>
+  <div class="breadcrumb">Home &gt; Roles & Access</div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs-container">
+  <div class="tab active">
+    <span class="tab-icon">⚙</span> Roles & Access
+  </div>
+  <div class="tab" (click)="goToUsers()">
+    <span class="tab-icon">👥</span> Users
+  </div>
+  <div class="tab">
+    <span class="tab-icon">📋</span> Bulk Assign User
+  </div>
+</div>
+
+<!-- Banner -->
+<div class="permissions-banner">
+  <div class="banner-text">
+    <h3>Roles & Access Permissions.</h3>
+    <p>Configure Add, Edit, and View permissions across all modules.</p>
+  </div>
+  <div class="banner-stats">
+    <div class="stat-box">
+      <span class="stat-number">{{ filteredRoles.length }}</span>
+      <span class="stat-label">Roles</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-number">{{ pages.length }}</span>
+      <span class="stat-label">Managed Modules</span>
+    </div>
+  </div>
+</div>
+
+<!-- Search & New Button Row -->
+<div class="toolbar">
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input
+      type="text"
+      placeholder="Search by role..."
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearch()"
+    />
+  </div>
+  <button class="btn-new" (click)="onNewRole()">+ New</button>
+</div>
+
+<!-- Roles Grid Section -->
+<div class="roles-section">
+  <div class="section-header">
+    <h2><span class="section-icon">⚙</span> Roles & Access</h2>
+    <p>Manage roles and their module-level access permissions.</p>
+  </div>
+
+  <!-- Info Alert -->
+  <div class="info-alert">
+    <span class="info-icon">ℹ</span>
+    Users can edit property details only within their assigned markets. All other markets are accessible in read-only mode.
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading" *ngIf="loading">Loading roles...</div>
+
+  <!-- Roles Table -->
+  <table class="roles-table" *ngIf="!loading">
+    <thead>
+      <tr>
+        <th class="col-name">Role Name</th>
+        <th class="col-description">Description</th>
+        <th class="col-markets">Markets</th>
+        <th class="col-actions">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let role of filteredRoles">
+        <td class="col-name">
+          <div class="role-name">{{ role.name }}</div>
+        </td>
+        <td class="col-description">
+          <span class="role-description">{{ role.description || '—' }}</span>
+        </td>
+        <td class="col-markets">
+          <span class="market-badge" *ngFor="let m of role.markets">{{ m }}</span>
+          <span class="market-badge" *ngIf="!role.markets || role.markets.length === 0">All</span>
+        </td>
+        <td class="col-actions">
+          <button class="btn-icon btn-edit" (click)="onEditRole(role)" title="Edit">
+            ✏️
+          </button>
+          <button class="btn-icon btn-delete" (click)="onDeleteRole(role)" title="Delete">
+            🗑️
+          </button>
+        </td>
+      </tr>
+      <tr *ngIf="filteredRoles.length === 0 && !loading">
+        <td colspan="4" class="no-data">No roles found.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============ ADD / EDIT ROLE MODAL ============ -->
+<div class="um-modal-backdrop" *ngIf="showModal" (click)="closeModal()"></div>
+<div class="um-modal um-modal-lg" *ngIf="showModal">
+  <div class="modal-header">
+    <h2>{{ isEditMode ? 'Edit Role' : 'Add Role' }}</h2>
+    <button class="modal-close" (click)="closeModal()">✕</button>
+  </div>
+
+  <div class="modal-body">
+    <!-- Row 1: Role Name + Description -->
+    <div class="form-row">
+      <div class="form-group flex-1">
+        <label>Role Name <span class="required">*</span></label>
+        <input
+          type="text"
+          [(ngModel)]="roleName"
+          placeholder="e.g. Regional Manager"
+        />
+      </div>
+      <div class="form-group flex-1">
+        <label>Description</label>
+        <input
+          type="text"
+          [(ngModel)]="roleDescription"
+          placeholder="Short summary of what this type does..."
+        />
+      </div>
+    </div>
+
+    <!-- Row 2: Markets Multi-select -->
+    <div class="form-group">
+      <label>Markets</label>
+      <div class="multi-select-container">
+        <div class="multi-select-input" (click)="toggleMarketDropdown()">
+          <span *ngIf="selectedMarketIds.length === 0" class="placeholder">Select markets...</span>
+          <span *ngIf="selectedMarketIds.length > 0" class="selected-text">{{ getSelectedMarketNames() }}</span>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="multi-select-dropdown" *ngIf="showMarketDropdown">
+          <label class="dropdown-item" *ngFor="let market of markets">
+            <input
+              type="checkbox"
+              [checked]="isMarketSelected(market.marketId)"
+              (change)="toggleMarket(market.marketId)"
+            />
+            <span>{{ market.name }}</span>
+          </label>
+          <div class="dropdown-item no-data" *ngIf="markets.length === 0">No markets available</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info Alert -->
+    <div class="info-alert modal-info">
+      <span class="info-icon">ℹ</span>
+      Users can edit property details only within their assigned markets. All other markets are accessible in read-only mode.
+    </div>
+
+    <!-- Module Permissions Section -->
+    <div class="permissions-section">
+      <div class="permissions-header">
+        <div class="permissions-title">
+          <span>⚙</span> <strong>Module Permissions</strong>
+          <p class="permissions-subtitle">Toggle Add, Edit, Delete, and View access per module.</p>
+        </div>
+        <div class="permissions-actions">
+          <button class="btn-link" (click)="selectAllPermissions()">✔ Select All</button>
+          <button class="btn-link" (click)="clearAllPermissions()">✖ Clear All</button>
+        </div>
+      </div>
+
+      <table class="permissions-table">
+        <thead>
+          <tr>
+            <th class="col-module">Module Name</th>
+            <th class="col-toggle">Add</th>
+            <th class="col-toggle">Edit</th>
+            <th class="col-toggle">Delete</th>
+            <th class="col-toggle">View</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let perm of modulePermissions">
+            <td class="col-module">{{ perm.moduleName }}</td>
+            <td class="col-toggle">
+              <label class="toggle">
+                <input type="checkbox" [(ngModel)]="perm.canAdd" />
+                <span class="slider"></span>
+              </label>
+            </td>
+            <td class="col-toggle">
+              <label class="toggle">
+                <input type="checkbox" [(ngModel)]="perm.canEdit" />
+                <span class="slider"></span>
+              </label>
+            </td>
+            <td class="col-toggle">
+              <label class="toggle">
+                <input type="checkbox" [(ngModel)]="perm.canDelete" />
+                <span class="slider"></span>
+              </label>
+            </td>
+            <td class="col-toggle">
+              <label class="toggle">
+                <input type="checkbox" [(ngModel)]="perm.canView" />
+                <span class="slider"></span>
+              </label>
+            </td>
+          </tr>
+          <tr *ngIf="modulePermissions.length === 0">
+            <td colspan="5" class="no-data">No modules found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Error -->
+    <div class="alert-danger" *ngIf="modalError">{{ modalError }}</div>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn-primary" (click)="onSaveRole()" [disabled]="saving">
+      {{ saving ? 'Saving...' : '💾 Save' }}
+    </button>
+    <button class="btn-text" (click)="closeModal()">Cancel</button>
+  </div>
+</div>
